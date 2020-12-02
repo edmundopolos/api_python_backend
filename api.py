@@ -1568,6 +1568,7 @@ class PaymentAction(Resource):
 reasonModel =  {
       "_id": fields.String(readonly=True,),
       "name": fields.String("name"),
+      "head": fields.String("head")
     }
 
 r= api.model('payment_reason', reasonModel)
