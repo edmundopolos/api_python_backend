@@ -257,7 +257,7 @@ def get_payment_reason(mongo,api):
 
 def delete_payment_reason(mongo,id):
     pay = mongo.db.payment_reason
-    pay.remove({"_id": id})
+    pay.remove({"_id": ObjectId(id)})
     data = pay.find()
     mthd = []
     for i in data:

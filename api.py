@@ -1524,7 +1524,7 @@ class TimeTable(Resource):
     def get(self):
         t = mongo.db.timetable
         data = t.find()
-        all_tranx =[]
+        all_tranx = []
         for i in data:
             sdata = json.dumps(i, default=my_handler)
             jdata = loads(sdata, object_hook=json_util.object_hook)
@@ -1546,14 +1546,14 @@ class Payment(Resource):
 
     @api.expect(py)
     def post(self):
-        e = payment_config(mongo,api)
+        e = payment_config(mongo, api)
         return e
 
 
     @token_required
     @api.marshal_with(py)
     def get(self):
-        e = get_payment_config(mongo,api)
+        e = get_payment_config(mongo, api)
         return e
 
 
@@ -1562,39 +1562,39 @@ class PaymentAction(Resource):
     # @api.marshal_with(py)
     @token_required
     def delete(self,id):
-        delete_payment_config(mongo,id)
+        delete_payment_config(mongo, id)
 
 
-reasonModel =  {
+reasonModel = {
       "_id": fields.String(readonly=True,),
       "name": fields.String("name"),
       "head": fields.String("head")
     }
 
-r= api.model('payment_reason', reasonModel)
+r = api.model('payment_reason', reasonModel)
 
-r = api.namespace('payment_reason')
-@r.route('/')
+pr = api.namespace('payment_reason')
+@pr.route('/')
 class Payment(Resource):
 
-    @api.expect(py)
+    @api.expect(r)
     def post(self):
-        e = payment_reason(mongo,api)
+        e = payment_reason(mongo, api)
         return e
 
     @token_required
-    @api.marshal_with(py)
+    @api.marshal_with(r)
     def get(self):
-        e = get_payment_reason(mongo,api)
+        e = get_payment_reason(mongo, api)
         return e
 
 
-@r.route('/<ObjectId:id>')
+@pr.route('/<ObjectId:id>')
 class PaymentAction(Resource):
     # @api.marshal_with(py)
     @token_required
-    def delete(self,id):
-        e = delete_payment_reason(mongo,id)
+    def delete(self, id):
+        e = delete_payment_reason(mongo, id)
         return e
 
 
@@ -1876,7 +1876,7 @@ class Attribute(Resource):
         return e
 
 
-@r.route('/<ObjectId:id>')
+@attribute.route('/<ObjectId:id>')
 class AttributeAction(Resource):
     # @api.marshal_with(py)
     @token_required
