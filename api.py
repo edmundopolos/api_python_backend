@@ -653,7 +653,7 @@ assignmentModel =  {
       "form": fields.List(fields.Raw,readonly=True)
 
     }
-assignment = api.model('assignments', assignmentModel)
+assignment = api.model('assignment', assignmentModel)
 
 ps = api.namespace('assignment')
 @ps.route('/')
@@ -772,7 +772,7 @@ class AssignmentAnswers(Resource):
 
 
 
-@ps.route('/answer/<aid>/<cid>/<sid>')
+@ps.route('/answer/<aid>/<cid>/<sid>/')
 class AssignmentAnswer(Resource):
 
 
@@ -795,7 +795,7 @@ class AssignmentAnswer(Resource):
         answer = mongo.db.assignment_answer
         answer.update({'assignmentId':aid,'classId':cid,'student':sid},
                              {'$set':{'grade':api.payload['grade']}},upsert=True)
-        data = answer.find_one({'assignmentId':aid,'classId':cid,'student':sid})
+        data = answer.find_one({'assignmentId': aid,'classId': cid,'student': sid})
 
         if data == None:
             # print('null')
@@ -804,10 +804,11 @@ class AssignmentAnswer(Resource):
             # print('check',data['answer'])
             return data['answer'],200
 
+
     # @api.expect(assignment)
     def post(self,aid,cid,sid):
             answer = mongo.db.assignment_answer
-            # print(api.payload)
+            print(api.payload)
             # data=answer.update({'_id': id},{'$set':{'form':api.payload['task_data']}},upsert=True)
             data = answer.find_one({'assignmentId':aid,'classId':cid,'student':sid})
 
@@ -818,20 +819,22 @@ class AssignmentAnswer(Resource):
                 payload['classId'] = cid
                 payload['student'] = sid
                 payload['answer'] = api.payload
+                payload['studentName'] = api.payload[0]['studentName']
+
                 data= answer.insert(payload)
                 print('inseterd')
                 print(api.payload)
-                return  api.payload,200
+                return api.payload, 200
             else:
                 payload = {}
                 payload['assignmentId'] = aid
                 payload['classId'] = cid
                 payload['student'] = sid
                 payload['answer'] = api.payload
-                answer.update({'assignmentId':aid,'classId':cid,'student':sid},{'$set':{'answer':api.payload}},upsert=True)
+                answer.update({'assignmentId':aid,'classId':cid,'student':sid},{'$set':{'answer':api.payload,'studentName':api.payload[0]['studentName']}},upsert=True)
                 print('updated')
-                print('lle',api.payload)
-                return  api.payload,200
+                print('lle', api.payload)
+                return api.payload, 200
 
 @ps.route('/<ObjectId:id>')
 class Assignments(Resource):
@@ -839,7 +842,7 @@ class Assignments(Resource):
     @api.marshal_list_with(assignment)
     def get(self,id):
         assignment = mongo.db.assignment
-        data = assignment.find({"classId":id})
+        data = assignment.find({"_id": id})
 
         adata = []
         for i in data:
@@ -1163,7 +1166,8 @@ class OneClassQuiz(Resource):
 
     @api.marshal_with(quiz)
     def get(self,id):
-        get_one_class_quiz(mongo,id)
+        e = get_one_class_quiz(mongo,id)
+        return e
 
 
 @ps.route('/<ObjectId:id>')
@@ -1171,21 +1175,26 @@ class OneQuiz(Resource):
 
     @api.marshal_with(quiz)
     def get(self,id):
-        get_one_quiz(mongo)
+        e = get_one_quiz(mongo)
+        return e
 
     def delete(self, id):
-        delete_quiz(mongo,id)
+        e = delete_quiz(mongo,id)
+        return e
 
 @ps.route('/form/<ObjectId:id>')
 class ClassQuizs(Resource):
 
     # @api.marshal_list_with(assignment)
     def get(self,id):
-        get_quiz_form(mongo, id)
+        e = get_quiz_form(mongo, id)
+        return e
+
 
     @api.expect(assignment)
     def post(self,id):
-            add_quiz_form(mongo, api, id)
+            e = add_quiz_form(mongo, api, id)
+            return e
 
 
 
@@ -1194,14 +1203,18 @@ class QuizAnswer(Resource):
 
     # @api.marshal_list_with(assignment)
     def get(self,aid,cid,sid):
-        get_quiz_answer(mongo, aid, cid, sid)
+        e = get_quiz_answer(mongo, aid, cid, sid)
+        return e
 
     def put(self,aid,cid,sid):
-        update_quiz_answer(mongo, api, aid, cid, sid)
+        e = update_quiz_answer(mongo, api, aid, cid, sid)
+        return e
 
     # @api.expect(assignment)
     def post(self,aid,cid,sid):
-           add_quiz_answer(mongo, api, aid, cid, sid)
+
+        e = add_quiz_answer(mongo, api, aid, cid, sid)
+        return e
 
 
 messageModel =  {

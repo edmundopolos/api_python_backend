@@ -49,7 +49,7 @@ def get_quiz(mongo):
     return qdata, 200
 
 
-def get_one_class_quiz(mongo,id):
+def get_one_class_quiz(mongo, id):
     quiz = mongo.db.quiz
     data = quiz.find({"classId": id})
     qdata = []
